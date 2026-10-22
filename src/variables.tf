@@ -50,3 +50,32 @@ variable "dns_soa_config" {
   EOT
   default     = "awsdns-hostmaster.amazon.com. 1 7200 900 1209600 60"
 }
+
+variable "delegation_set_id" {
+  type        = string
+  default     = null
+  description = <<-EOT
+    Existing reusable Route53 delegation set id to attach every zone to. When set,
+    the id is looked up (and validated) and all zones share that delegation set's
+    name servers — e.g. a subdomain zone attaching to its apex's delegation set.
+    Mutually exclusive with `create_delegation_set`. When null (default), no
+    existing set is attached.
+  EOT
+}
+
+variable "create_delegation_set" {
+  type        = bool
+  default     = false
+  description = <<-EOT
+    Create a new reusable Route53 delegation set and attach every zone to it, so
+    a group of zones (e.g. an apex and its subdomains) share one fixed name-server
+    set. Ignored when `delegation_set_id` is set. Defaults to false, preserving
+    the upstream behavior of letting AWS assign per-zone name servers.
+  EOT
+}
+
+variable "delegation_set_reference_name" {
+  type        = string
+  default     = null
+  description = "Reference name for the delegation set created when `create_delegation_set` is true. Ignored otherwise."
+}
